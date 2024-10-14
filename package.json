@@ -1,0 +1,26 @@
+{
+    "name": "code-captains-monorepo",
+    "private": true,
+    "version": "0.0.1",
+    "type": "module",
+    "scripts": {
+        "test": "vitest",
+        "lint:check": "prettier --config ./.prettierrc --check . && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "lint:fix": "prettier --config ./.prettierrc --write . && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix"
+    },
+    "keywords": [
+        "CODEOWNER",
+        "captain",
+        "monorepo"
+    ],
+    "author": "Crouton, LLC",
+    "license": "Apache-2.0",
+    "packageManager": "pnpm@9.12.1",
+    "devDependencies": {
+        "eslint": "catalog:",
+        "eslint-config-goldilocks": "catalog:",
+        "prettier": "catalog:",
+        "typescript": "catalog:",
+        "vitest": "catalog:"
+    }
+}
