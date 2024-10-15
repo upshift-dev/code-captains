@@ -3,25 +3,25 @@ import { expect, test } from "vitest";
 import { evaluateRepoPolicy } from "../checker.js";
 import { AllFiles, DirectoryPolicy } from "../ir/ir-types-v1.js";
 
-const rootPolicy = {
+const globalFilePolicy = {
     codeCaptains: ["@me", "@myself", "@i"],
     fileFilter: {
-        includePatterns: ["package.json", "tsconfig.json"],
+        includePatterns: ["package.json", "/tsconfig.json"],
         excludePatterns: [],
     },
     sourceFilePath: "code-captains.yml",
 };
 
-const rootDocsPolicy = {
+const noNestingDocsPolicy = {
     codeCaptains: ["@documenters"],
     fileFilter: {
-        includePatterns: ["docs/*"],
+        includePatterns: ["**/docs/*"],
         excludePatterns: [],
     },
     sourceFilePath: "code-captains.yml",
 };
 
-const rootLogDirPolicy = {
+const globalLogDirPolicy = {
     codeCaptains: ["@loggers"],
     fileFilter: {
         includePatterns: ["**/logs/**"],
@@ -30,10 +30,19 @@ const rootLogDirPolicy = {
     sourceFilePath: "code-captains.yml",
 };
 
-const rootJsFilePolicy = {
+const globalWildcardFilePolicy = {
     codeCaptains: ["@scripters"],
     fileFilter: {
         includePatterns: ["*.js"],
+        excludePatterns: [],
+    },
+    sourceFilePath: "code-captains.yml",
+};
+
+const rootDirPolicy = {
+    codeCaptains: ["@builders"],
+    fileFilter: {
+        includePatterns: ["/build/**"],
         excludePatterns: [],
     },
     sourceFilePath: "code-captains.yml",
@@ -43,7 +52,7 @@ const subpackagePolicy = {
     codeCaptains: ["@subpackage-captain"],
     fileFilter: {
         includePatterns: AllFiles,
-        excludePatterns: ["nested-shared-file.txt", "/root-shared-file.txt"],
+        excludePatterns: [],
     },
     sourceFilePath: "packages/subpackage/code-captains.yml",
 };
@@ -52,17 +61,18 @@ const otherSubpackagePolicy = {
     codeCaptains: ["@other-subpackage-captain"],
     fileFilter: {
         includePatterns: AllFiles,
-        excludePatterns: ["shared-file.txt"],
+        excludePatterns: [],
     },
     sourceFilePath: "packages/other-subpackage/code-captains.yml",
 };
 
 const repoPolicy = {
     directoryPolicies: [
-        rootPolicy,
-        rootDocsPolicy,
-        rootLogDirPolicy,
-        rootJsFilePolicy,
+        globalFilePolicy,
+        noNestingDocsPolicy,
+        globalLogDirPolicy,
+        globalWildcardFilePolicy,
+        rootDirPolicy,
         subpackagePolicy,
         otherSubpackagePolicy,
     ],
@@ -72,7 +82,7 @@ const evaluateRepoPolicyTestCases: { changedFilePaths: string[]; expectedPolicie
     {
         // root package.json
         changedFilePaths: ["no-match", "package.json"],
-        expectedPolicies: [rootPolicy],
+        expectedPolicies: [globalFilePolicy],
     },
     {
         // multi-level match package.json
@@ -81,7 +91,17 @@ const evaluateRepoPolicyTestCases: { changedFilePaths: string[]; expectedPolicie
             "packages/subpackage/package.json",
             "packages/other-subpackage/package.json",
         ],
-        expectedPolicies: [rootPolicy, subpackagePolicy, otherSubpackagePolicy],
+        expectedPolicies: [globalFilePolicy, subpackagePolicy, otherSubpackagePolicy],
+    },
+    {
+        // root /tsconfig.json
+        changedFilePaths: ["tsconfig.json"],
+        expectedPolicies: [globalFilePolicy],
+    },
+    {
+        // nested tsconfig.json should not match
+        changedFilePaths: ["src/nested/tsconfig.json"],
+        expectedPolicies: [],
     },
     {
         // subpackage file
@@ -91,7 +111,7 @@ const evaluateRepoPolicyTestCases: { changedFilePaths: string[]; expectedPolicie
     {
         // docs/* wildcard
         changedFilePaths: ["docs/README.md"],
-        expectedPolicies: [rootDocsPolicy],
+        expectedPolicies: [noNestingDocsPolicy],
     },
     {
         // docs/* wildcard should not propagate to nested dirs
@@ -99,19 +119,29 @@ const evaluateRepoPolicyTestCases: { changedFilePaths: string[]; expectedPolicie
         expectedPolicies: [],
     },
     {
-        // js file
+        // any .js file
         changedFilePaths: ["src/apps/main.js"],
-        expectedPolicies: [rootJsFilePolicy],
+        expectedPolicies: [globalWildcardFilePolicy],
+    },
+    {
+        // /build/ should apply to nested files
+        changedFilePaths: ["build/nested/output.bin"],
+        expectedPolicies: [rootDirPolicy],
+    },
+    {
+        // /build/ should not apply to other dirs
+        changedFilePaths: ["src/build/output.bin"],
+        expectedPolicies: [],
     },
     {
         // **/logs wildcard at root
         changedFilePaths: ["logs/out.log"],
-        expectedPolicies: [rootLogDirPolicy],
+        expectedPolicies: [globalLogDirPolicy],
     },
     {
         // **/logs wildcard nested folder
         changedFilePaths: ["src/nested/logs/out.log"],
-        expectedPolicies: [rootLogDirPolicy],
+        expectedPolicies: [globalLogDirPolicy],
     },
 ];
 

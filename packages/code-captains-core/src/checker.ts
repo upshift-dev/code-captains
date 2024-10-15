@@ -33,7 +33,12 @@ const evaluateDirectoryPolicy = (
             // The changed file isn't in the same directory, so ignore
             return [];
         }
-        return [cfp];
+        if (relativePath.startsWith(`..${sep}`)) {
+            // NOTE(thomas): At this point, paths should always start with ../
+            //  We trim off the leading .. so that our comparisons view this as a "root" file
+            return [relativePath.substring(2)];
+        }
+        throw new Error(`Unhandled relativized path: ${relativePath}`);
     });
 
     // If no files to compare
