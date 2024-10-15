@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import { parse } from "yaml";
 import { ZodSchema } from "zod";
 
+import { AllFiles, RepoPolicy } from "./ir/ir-types-v1.js";
 import { directorySpecSchema } from "./spec/directory-spec-v1.js";
 
 const parseYamlFileUnsafe = async <T>(filePath: string, schema: ZodSchema<T>) => {
@@ -11,20 +12,22 @@ const parseYamlFileUnsafe = async <T>(filePath: string, schema: ZodSchema<T>) =>
     return schema.parse(data);
 };
 
-const directoryFileToDirectoryPolicy = async (filePath: string) => {
+const directoryFileToDirectoryPolicies = async (filePath: string) => {
     const directorySpec = await parseYamlFileUnsafe(filePath, directorySpecSchema);
-    return {
+    return directorySpec.policies.map((policy) => ({
         sourceFilePath: filePath,
         fileFilter: {
-            include: directorySpec.include == null ? "all-files" : directorySpec.include,
-            exclude: directorySpec.exclude == null ? [] : directorySpec.exclude,
+            includePatterns: policy.include == null ? AllFiles : policy.include,
+            excludePatterns: policy.exclude == null ? [] : policy.exclude,
         },
-        codeCaptains: directorySpec.captains,
-    };
+        codeCaptains: policy.captains,
+    }));
 };
 
-export const filesToIr = async (directoryFilePaths: string[]) => {
+export const filesToIr = async (directoryFilePaths: string[]): Promise<RepoPolicy> => {
     return {
-        directoryPolicies: await Promise.all(directoryFilePaths.map((dfp) => directoryFileToDirectoryPolicy(dfp))),
+        directoryPolicies: (
+            await Promise.all(directoryFilePaths.map((dfp) => directoryFileToDirectoryPolicies(dfp)))
+        ).flat(),
     };
 };

@@ -16,19 +16,26 @@ test("filesToIr", async () => {
             {
                 codeCaptains: ["@me", "@myself", "@i"],
                 fileFilter: {
-                    exclude: [],
-                    include: ["package.json", "tsconfig.json"],
+                    includePatterns: ["package.json", "tsconfig.json"],
+                    excludePatterns: [],
                 },
-                sourceFilePath: "packages/code-captains-core/src/__tests__/test-policy/code-captains.yml",
+                sourceFilePath: `${testPolicyDir}/code-captains.yml`,
+            },
+            {
+                codeCaptains: ["@gitexperts"],
+                fileFilter: {
+                    includePatterns: [".gitignore"],
+                    excludePatterns: [],
+                },
+                sourceFilePath: `${testPolicyDir}/code-captains.yml`,
             },
             {
                 codeCaptains: ["@subpackage-captain"],
                 fileFilter: {
-                    exclude: ["shared-file.txt"],
-                    include: "all-files",
+                    includePatterns: "all-files",
+                    excludePatterns: ["shared-file.txt"],
                 },
-                sourceFilePath:
-                    "packages/code-captains-core/src/__tests__/test-policy/packages/subpackage/code-captains.yml",
+                sourceFilePath: `${testPolicyDir}/packages/subpackage/code-captains.yml`,
             },
         ],
     });

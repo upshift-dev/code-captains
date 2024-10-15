@@ -10,7 +10,16 @@ export type DirectoryPolicyResult = DirectoryPolicy & {
 };
 
 const anyPatternMatches = (relChangedFilePath: string, patterns: string[]) => {
-    return patterns.find((pattern) => minimatch(relChangedFilePath, pattern, { matchBase: true })) !== undefined;
+    return (
+        patterns.find((pattern) =>
+            minimatch(relChangedFilePath, pattern, {
+                matchBase: true,
+                // Disable comments and negations for simplicity
+                nocomment: true,
+                nonegate: true,
+            }),
+        ) !== undefined
+    );
 };
 
 const evaluateDirectoryPolicy = (
@@ -26,6 +35,9 @@ const evaluateDirectoryPolicy = (
         }
         return [cfp];
     });
+
+    // If no files to compare
+    if (relChangedFilePaths.length === 0) return { ...directoryPolicy, isPolicyMet: false, matchingFiles: [] };
 
     // Exclude takes precedence, so check that first and short-circuit
     const matchingExcludedFiles = relChangedFilePaths.filter((rcfp) =>
@@ -59,11 +71,12 @@ export const evaluateRepoPolicy = async (repoPolicy: RepoPolicy, changedFilePath
     );
     const metPolicies = policyResults.filter((result) => result.isPolicyMet);
 
-    // Build set of unique code captains
+    // Build set of unique results
     const uniqueCodeCaptains = new Set(metPolicies.flatMap((policy) => policy.codeCaptains));
+    const uniquePolicyFiles = new Set(metPolicies.map((policy) => policy.sourceFilePath));
 
     return {
         codeCaptains: uniqueCodeCaptains,
-        metPolicyFilePaths: metPolicies.map((policy) => policy.sourceFilePath),
+        metPolicyFilePaths: uniquePolicyFiles,
     };
 };

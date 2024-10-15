@@ -1,4 +1,6 @@
-exclude:
-    - shared-file.txt
-captains:
-    - "@subpackage-captain"
+version: 1
+policies:
+    - exclude:
+          - shared-file.txt
+      captains:
+          - "@subpackage-captain"

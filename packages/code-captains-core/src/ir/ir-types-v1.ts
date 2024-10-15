@@ -1,5 +1,7 @@
+export const AllFiles = "all-files" as const;
+
 export type ChangedFileFilter = {
-    includePatterns: string[] | "all-files";
+    includePatterns: string[] | typeof AllFiles;
     excludePatterns: string[];
 };
 

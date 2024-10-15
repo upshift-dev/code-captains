@@ -1,7 +1,13 @@
-include:
-    - package.json
-    - tsconfig.json
-captains:
-    - "@me"
-    - "@myself"
-    - "@i"
+version: 1
+policies:
+    - include:
+          - package.json
+          - tsconfig.json
+      captains:
+          - "@me"
+          - "@myself"
+          - "@i"
+    - include:
+          - .gitignore
+      captains:
+          - "@gitexperts"
