@@ -1,0 +1,4 @@
+exclude:
+    - shared-file.txt
+captains:
+    - "@subpackage-captain"

@@ -20,7 +20,7 @@ const evaluateDirectoryPolicy = (
     // Relativize paths, and filter out ones that wouldn't be relevant (different subdir)
     const relChangedFilePaths = changedFilePaths.flatMap((cfp) => {
         const relativePath = relative(directoryPolicy.sourceFilePath, cfp);
-        if (relativePath.startsWith("..") || relativePath.startsWith(sep)) {
+        if (relativePath.startsWith(`..${sep}..`) || relativePath.startsWith(sep)) {
             // The changed file isn't in the same directory, so ignore
             return [];
         }

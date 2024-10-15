@@ -1,0 +1,7 @@
+include:
+    - package.json
+    - tsconfig.json
+captains:
+    - "@me"
+    - "@myself"
+    - "@i"

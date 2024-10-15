@@ -17,7 +17,7 @@ test("evaluate", async () => {
             },
         ],
     };
-    expect(await evaluateRepoPolicy(repoPolicy, ["packages/code-captains-core/package.json"])).toBe({
+    expect(await evaluateRepoPolicy(repoPolicy, ["packages/code-captains-core/package.json"])).toStrictEqual({
         codeCaptains: new Set(["me"]),
         metPolicyFilePaths: ["root.yml"],
     });

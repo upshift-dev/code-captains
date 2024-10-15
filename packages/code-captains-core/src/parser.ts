@@ -25,6 +25,6 @@ const directoryFileToDirectoryPolicy = async (filePath: string) => {
 
 export const filesToIr = async (directoryFilePaths: string[]) => {
     return {
-        directoryPolicies: directoryFilePaths.map((dfp) => directoryFileToDirectoryPolicy(dfp)),
+        directoryPolicies: await Promise.all(directoryFilePaths.map((dfp) => directoryFileToDirectoryPolicy(dfp))),
     };
 };
