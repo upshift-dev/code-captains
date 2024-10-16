@@ -17,6 +17,7 @@ jobs:
             - run: pnpm run -r package
 
     test:
+        needs: build
         runs-on: ubuntu-latest
         steps:
             # Clone this repo
