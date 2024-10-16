@@ -22,6 +22,7 @@ const main = async () => {
     const repoPolicy = await renderRepoPolicy(codeCaptainsFiles);
     const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
 
+    // Set outputs
     core.setOutput(CODE_CAPTAINS_OUTPUT, [...codeCaptains].sort().join(OUTPUT_SEPARATOR));
     core.setOutput(MET_POLICY_FILES_OUTPUT, [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR));
 };
