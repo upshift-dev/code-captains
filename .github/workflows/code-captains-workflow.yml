@@ -21,6 +21,8 @@ jobs:
                   separator: "|"
 
             - name: Determine Code Captains
+              # TODO(thomas): This needs to reference a version, since we don't want to checkout the full repo.
+              #  Or couple the workflow to our repo...
               uses: ./
               with:
                   changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
