@@ -9,7 +9,7 @@ runs:
         - name: Checkout all code-captains.yml files
           uses: actions/checkout@v4
           with:
-              filter: "**/code-captains.yml"
+              sparse-checkout: code-captains.yml
 
         - name: Determine changed files
           uses: tj-actions/changed-files@v45
