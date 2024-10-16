@@ -5,6 +5,9 @@ on:
 
 jobs:
     code-captains:
+        permissions:
+            pull-requests: write
+
         runs-on: ubuntu-latest
 
         steps:
