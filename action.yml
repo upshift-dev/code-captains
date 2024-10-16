@@ -1,0 +1,28 @@
+name: "Code Captains"
+description: "Determines which Code Captains are required to review a PR"
+
+inputs: {}
+
+runs:
+    using: "composite"
+    steps:
+        - name: Checkout all code-captains.yml files
+          uses: actions/checkout@v4
+          with:
+              sparse-checkout: "**/code-captains.yml"
+
+        - name: Determine changed files
+          uses: tj-actions/changed-files@v45
+          with:
+              output_renamed_files_as_deleted_and_added: true
+              separator: "|"
+
+        - name: "Determine Code Captains"
+          using: "node20"
+          main: "packages/code-captains-github-action/dist/index.js"
+          with:
+              changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
+
+branding:
+    icon: users
+    color: white

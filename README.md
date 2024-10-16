@@ -1,15 +1,13 @@
 # <div style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 12px;"><img src="Upshift.png" alt="drawing" width="64"/> Upshift</div>
 
-
 A codebase management tool for engineering teams.
 
 <h3>What's included</h3>
 
-* Replacement for CODEOWNERS that's more configurable.
-* Github actions to enforce codebase rules.
-* Migration tool to convert CODEOWNERS to Upshift.
-* (soon) Integration into more tools like Jira, Linear, PagerDuty, Slack.
-
+-   Replacement for CODEOWNERS that's more configurable.
+-   Github actions to enforce codebase rules.
+-   Migration tool to convert CODEOWNERS to Upshift.
+-   (soon) Integration into more tools like Jira, Linear, PagerDuty, Slack.
 
 <h3>Why did we build this</h3>
 

@@ -1,17 +1,17 @@
-import path from "path";
+import * as path from "path";
 
 import { expect, test } from "vitest";
 
-import { filesToIr } from "../parser.js";
+import { renderRepoPolicy } from "../parser.js";
 
 const testPolicyDir = "packages/code-captains-core/src/__tests__/test-policy";
 
 test("filesToIr", async () => {
-    const ir = await filesToIr([
+    const repoPolicy = await renderRepoPolicy([
         path.join(testPolicyDir, "code-captains.yml"),
         path.join(testPolicyDir, "packages/subpackage/code-captains.yml"),
     ]);
-    expect(ir).toStrictEqual({
+    expect(repoPolicy).toStrictEqual({
         directoryPolicies: [
             {
                 codeCaptains: ["@me", "@myself", "@i"],
