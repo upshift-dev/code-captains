@@ -1,0 +1,15 @@
+name: "Determine Code Captains"
+description: "Determines which Code Captains are required to review a PR"
+
+inputs:
+    changed-files:
+        description: List of changed file paths, delimited by |
+        required: true
+
+runs:
+    using: "node20"
+    main: "./dist/index.js"
+
+branding:
+    icon: users
+    color: white

@@ -17,9 +17,7 @@ runs:
               output_renamed_files_as_deleted_and_added: true
               separator: "|"
 
-        - name: "Determine Code Captains"
-          using: "node20"
-          main: "packages/code-captains-github-action/dist/index.js"
+        - uses: ./packages/code-captains-github-action
           with:
               changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
 
