@@ -6,6 +6,7 @@ on:
 jobs:
     code-captains:
         permissions:
+            contents: read
             pull-requests: write
 
         runs-on: ubuntu-latest
