@@ -4,8 +4,7 @@
     "version": "0.1.0",
     "type": "module",
     "scripts": {
-        "build": "rm -fr dist && tsc --project tsconfig.json",
-        "package": "ncc build dist/main.js --source-map"
+        "build": "rm -fr dist && tsc --project tsconfig.json && ncc build dist/main.js"
     },
     "dependencies": {
         "@actions/core": "^1.11.1",

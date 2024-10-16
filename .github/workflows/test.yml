@@ -14,7 +14,6 @@ jobs:
     #         - uses: pnpm/action-setup@v4
     #         - run: pnpm install
     #         - run: pnpm run -r build
-    #         - run: pnpm run -r package
 
     test-reusable-workflow:
         uses: ./.github/workflows/code-captains.yml
