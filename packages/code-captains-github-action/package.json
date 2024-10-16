@@ -1,0 +1,19 @@
+{
+    "name": "@upshift-dev/code-captains-github-action",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "build": "rm -fr dist && tsc --project tsconfig.json",
+        "package": "ncc build dist/main.js --source-map"
+    },
+    "dependencies": {
+        "@actions/core": "^1.11.1",
+        "@actions/glob": "^0.5.0",
+        "@upshift-dev/code-captains-core": "workspace:^"
+    },
+    "devDependencies": {
+        "@vercel/ncc": "^0.38.2",
+        "typescript": "catalog:"
+    }
+}

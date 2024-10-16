@@ -13,7 +13,7 @@
         "captain",
         "monorepo"
     ],
-    "author": "Crouton, LLC",
+    "author": "Titan Ops Corporation",
     "packageManager": "pnpm@9.12.1",
     "devDependencies": {
         "eslint": "catalog:",
