@@ -1,0 +1,24 @@
+name: code-captains
+
+on:
+    workflow_call:
+
+jobs:
+    code-captains:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout all code-captains.yml files
+              uses: actions/checkout@v4
+              with:
+                  sparse-checkout: code-captains.yml
+
+            - name: Determine changed files
+              uses: tj-actions/changed-files@v45
+              with:
+                  output_renamed_files_as_deleted_and_added: true
+                  separator: "|"
+
+            - uses: ./
+              with:
+                  changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
