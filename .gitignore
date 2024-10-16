@@ -1,4 +1,4 @@
 **/dist/**
-!packages/code-captains-github-action/dist/index.js
+!packages/code-captains-github-action/dist/**
 
 node_modules
