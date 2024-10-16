@@ -9,6 +9,7 @@
     "types": "./src/index.ts",
     "dependencies": {
         "minimatch": "^10.0.1",
+        "winston": "catalog:",
         "yaml": "^2.6.0",
         "zod": "catalog:"
     },
