@@ -14,6 +14,7 @@ const OUTPUT_SEPARATOR = "|";
 
 // TODO(thomas): Allow setting log level via action input
 const logger = winston.createLogger({
+    level: "debug",
     transports: [new winston.transports.Console()],
 });
 
@@ -34,6 +35,7 @@ const main = async () => {
     const repoPolicy = await renderRepoPolicy(relCodeCaptainsFiles);
     logger.debug("Rendered the following repo-wide policy", { repoPolicy });
     const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
+    logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
 
     // Set outputs
     core.setOutput(CODE_CAPTAINS_OUTPUT, [...codeCaptains].sort().join(OUTPUT_SEPARATOR));
