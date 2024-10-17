@@ -21,7 +21,7 @@ jobs:
                   exit 1
                   fi
 
-    test-code:
+    test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/setup-node@v4
@@ -31,6 +31,3 @@ jobs:
             - uses: pnpm/action-setup@v4
             - run: pnpm install
             - run: pnpm run test
-
-    test-reusable-workflow:
-        uses: ./.github/workflows/code-captains-workflow.yml

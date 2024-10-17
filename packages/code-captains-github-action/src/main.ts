@@ -37,15 +37,18 @@ const main = async () => {
     const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
     logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
 
-    // Set outputs
-    core.setOutput(
-        CODE_CAPTAINS_OUTPUT,
-        [...codeCaptains].sort().map((captain) => `\`${OUTPUT_SEPARATOR}${captain}\``),
-    );
-    core.setOutput(
-        MET_POLICY_FILES_OUTPUT,
-        [...metPolicyFilePaths].sort().map((filePath) => `${OUTPUT_SEPARATOR}${filePath}`),
-    );
+    // Format and set outputs
+    const formattedCodeCaptains =
+        codeCaptains.size > 0
+            ? [...codeCaptains]
+                  .sort()
+                  .map((captain) => `\`${captain}\``)
+                  .join(OUTPUT_SEPARATOR)
+            : "";
+    const formattedFilePaths =
+        metPolicyFilePaths.size > 0 ? OUTPUT_SEPARATOR + [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR) : "";
+    core.setOutput(CODE_CAPTAINS_OUTPUT, formattedCodeCaptains);
+    core.setOutput(MET_POLICY_FILES_OUTPUT, formattedFilePaths);
 };
 
 main();
