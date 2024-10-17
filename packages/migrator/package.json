@@ -1,9 +1,12 @@
 {
     "name": "@upshift-dev/migrator",
     "private": true,
-    "version": "0.1.0",
+    "version": "0.0.1",
     "type": "module",
     "bin": "dist/main.js",
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "build": "rm -fr dist && tsc --project tsconfig.json",
         "run": "tsx src/main.ts"
