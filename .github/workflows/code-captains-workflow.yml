@@ -48,11 +48,10 @@ jobs:
               issue-number: ${{ github.event.pull_request.number }}
               body: |
                   Determined the following Code Captains:
-
-                  - ${{ steps.code-captains.outputs.code-captains }}
+                  ${{ steps.code-captains.outputs.code-captains }}
 
                   This PR includes changes that matched these policies:
-                  - ${{ steps.code-captains.outputs.met-policy-files }}
+                  ${{ steps.code-captains.outputs.met-policy-files }}
               edit-mode: replace
 
             - name: Record empty Code Captains comment

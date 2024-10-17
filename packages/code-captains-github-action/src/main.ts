@@ -38,8 +38,14 @@ const main = async () => {
     logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
 
     // Set outputs
-    core.setOutput(CODE_CAPTAINS_OUTPUT, [...codeCaptains].sort().join(OUTPUT_SEPARATOR));
-    core.setOutput(MET_POLICY_FILES_OUTPUT, [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR));
+    core.setOutput(
+        CODE_CAPTAINS_OUTPUT,
+        [...codeCaptains].sort().map((captain) => `\`${OUTPUT_SEPARATOR}${captain}\``),
+    );
+    core.setOutput(
+        MET_POLICY_FILES_OUTPUT,
+        [...metPolicyFilePaths].sort().map((filePath) => `${OUTPUT_SEPARATOR}${filePath}`),
+    );
 };
 
 main();
