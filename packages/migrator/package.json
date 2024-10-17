@@ -1,0 +1,24 @@
+{
+    "name": "@upshift-dev/migrator",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "bin": "dist/main.js",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "rm -fr dist && tsc --project tsconfig.build.json",
+        "run": "tsx src/main.ts"
+    },
+    "dependencies": {
+        "@upshift-dev/code-captains-core": "workspace:^",
+        "commander": "^12.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "tsx": "catalog:",
+        "typescript": "catalog:",
+        "vitest": "catalog:"
+    }
+}
