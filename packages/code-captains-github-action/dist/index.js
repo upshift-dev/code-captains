@@ -71658,7 +71658,7 @@ const buildFileMarkdownLink = (filePath) => {
     if (!baseRef) {
         return filePath;
     }
-    const targetFileUrl = encodeURI(`${serverUrl}/${repo.repo}/blob/${baseRef}/${filePath}`);
+    const targetFileUrl = encodeURI(`${serverUrl}/${repo.owner}/${repo.repo}/blob/${baseRef}/${filePath}`);
     return `[${filePath}](${targetFileUrl})`;
 };
 const main = async () => {
