@@ -29,7 +29,7 @@ const buildFileMarkdownLink = (filePath: string) => {
         return filePath;
     }
 
-    const targetFileUrl = encodeURI(`${serverUrl}/${repo}/blob/${baseRef}/${filePath}`);
+    const targetFileUrl = encodeURI(`${serverUrl}/${repo.repo}/blob/${baseRef}/${filePath}`);
     return `[${filePath}](${targetFileUrl})`;
 };
 
