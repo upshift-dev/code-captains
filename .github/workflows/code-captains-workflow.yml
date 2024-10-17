@@ -1,0 +1,54 @@
+name: code-captains
+
+on:
+    workflow_call:
+
+jobs:
+    code-captains:
+        permissions:
+            contents: read
+            pull-requests: write
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout all code-captains.yml files
+              uses: actions/checkout@v4
+              # TODO(thomas): Un-comment the below once we have our action published
+              # with:
+              #     sparse-checkout: code-captains.yml
+
+            - name: Determine changed files
+              id: changed-files
+              uses: tj-actions/changed-files@v45
+              with:
+                  output_renamed_files_as_deleted_and_added: true
+                  separator: "|"
+
+            - name: Determine Code Captains
+              id: code-captains
+              # TODO(thomas): This needs to reference a version, since we can't couple the public reusable workflow to files in our repo
+              uses: ./
+              with:
+                  changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
+
+            - name: Find Comment
+              uses: peter-evans/find-comment@v3
+              id: find-comment
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  comment-author: "github-actions[bot]"
+                  body-includes: Code Captains
+
+            - name: Create or update comment
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+                  comment-id: ${{ steps.find-comment.outputs.comment-id }}
+                  issue-number: ${{ github.event.pull_request.number }}
+                  body: |
+                      Determined the following Code Captains:
+                      ${{ steps.code-captains.outputs.code-captains }}
+
+                      This PR includes changes that matched these policies:
+                      ${{ steps.code-captains.outputs.met-policy-files }}
+                  edit-mode: replace

@@ -8,4 +8,5 @@ catalog:
     typescript: 5.3.2
     tsx: ^4.19.1
     vitest: ^2.0.0
+    winston: ^3.15.0
     zod: ^3.23.8
