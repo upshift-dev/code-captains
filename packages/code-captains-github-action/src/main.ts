@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import * as core from "@actions/core";
 import * as glob from "@actions/glob";
 import { evaluateRepoPolicy, renderRepoPolicy } from "@upshift-dev/code-captains-core";
@@ -23,11 +25,13 @@ const main = async () => {
 
     // Get all the code-captains YAML files
     const codeCaptainsGlobber = await glob.create(CODE_CAPTAINS_PATTERN);
-    const codeCaptainsFiles = await codeCaptainsGlobber.glob();
-    logger.debug("Running with code captains files", { codeCaptainsFiles });
+    const absCodeCaptainsFiles = await codeCaptainsGlobber.glob();
+    const cwd = process.cwd();
+    const relCodeCaptainsFiles = absCodeCaptainsFiles.map((absPath) => path.relative(cwd, absPath));
+    logger.debug("Running with code captains files", { relCodeCaptainsFiles });
 
     // Compute the captains
-    const repoPolicy = await renderRepoPolicy(codeCaptainsFiles);
+    const repoPolicy = await renderRepoPolicy(relCodeCaptainsFiles);
     logger.debug("Rendered the following repo-wide policy", { repoPolicy });
     const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
 

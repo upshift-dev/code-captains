@@ -38,6 +38,9 @@ const evaluateDirectoryPolicy = (
             //  We trim off the leading .. so that our comparisons view this as a "root" file
             return [relativePath.substring(2)];
         }
+        if (relativePath === "") {
+            return `${sep}cfp`;
+        }
         throw new Error(`Unhandled relativized path: ${relativePath}`);
     });
 
