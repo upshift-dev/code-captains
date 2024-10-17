@@ -17,6 +17,7 @@ jobs:
               with:
                   ref: ${{ github.base_ref }}
                   sparse-checkout: code-captains.yml
+                  sparse-checkout-cone-mode: false
 
             - name: Determine changed files
               id: changed-files
