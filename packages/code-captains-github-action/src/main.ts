@@ -1,6 +1,7 @@
 import * as path from "path";
 
 import * as core from "@actions/core";
+import * as github from "@actions/github";
 import * as glob from "@actions/glob";
 import { evaluateRepoPolicy, renderRepoPolicy } from "@upshift-dev/code-captains-core";
 import winston from "winston";
@@ -17,6 +18,20 @@ const logger = winston.createLogger({
     level: "debug",
     transports: [new winston.transports.Console()],
 });
+
+const buildFileMarkdownLink = (filePath: string) => {
+    /**
+     * Returns a markdown link to the file on the target ref. Falls back to just returning the filePath.
+     */
+    const { serverUrl, repo } = github.context;
+    const baseRef = process.env.GITHUB_BASE_REF;
+    if (!baseRef) {
+        return filePath;
+    }
+
+    const targetFileUrl = encodeURI(`${serverUrl}/${repo.owner}/${repo.repo}/blob/${baseRef}/${filePath}`);
+    return `[${filePath}](${targetFileUrl})`;
+};
 
 const main = async () => {
     // Parse required input
@@ -47,7 +62,13 @@ const main = async () => {
                   .join(OUTPUT_SEPARATOR)
             : "";
     const formattedFilePaths =
-        metPolicyFilePaths.size > 0 ? OUTPUT_SEPARATOR + [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR) : "";
+        metPolicyFilePaths.size > 0
+            ? OUTPUT_SEPARATOR +
+              [...metPolicyFilePaths]
+                  .sort()
+                  .map((filePath) => buildFileMarkdownLink(filePath))
+                  .join(OUTPUT_SEPARATOR)
+            : "";
     core.setOutput(CODE_CAPTAINS_OUTPUT, formattedCodeCaptains);
     core.setOutput(MET_POLICY_FILES_OUTPUT, formattedFilePaths);
 };
