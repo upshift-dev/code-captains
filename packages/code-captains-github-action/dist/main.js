@@ -1,15 +1,17 @@
+import * as path from "path";
 import * as core from "@actions/core";
 import * as glob from "@actions/glob";
 import { evaluateRepoPolicy, renderRepoPolicy } from "@upshift-dev/code-captains-core";
 import winston from "winston";
 const CHANGED_FILES_INPUT = "changed-files";
-const CHANGED_FILES_SEPARATOR = "|";
+const CHANGED_FILES_SEPARATOR = "\\|";
 const CODE_CAPTAINS_PATTERN = "**/code-captains.yml";
 const CODE_CAPTAINS_OUTPUT = "code-captains";
 const MET_POLICY_FILES_OUTPUT = "met-policy-files";
-const OUTPUT_SEPARATOR = "|";
+const OUTPUT_SEPARATOR = "\n- ";
 // TODO(thomas): Allow setting log level via action input
 const logger = winston.createLogger({
+    level: "debug",
     transports: [new winston.transports.Console()],
 });
 const main = async () => {
@@ -19,15 +21,26 @@ const main = async () => {
     logger.debug("Running on changed files", { changedFiles });
     // Get all the code-captains YAML files
     const codeCaptainsGlobber = await glob.create(CODE_CAPTAINS_PATTERN);
-    const codeCaptainsFiles = await codeCaptainsGlobber.glob();
-    logger.debug("Running with code captains files", { codeCaptainsFiles });
+    const absCodeCaptainsFiles = await codeCaptainsGlobber.glob();
+    const cwd = process.cwd();
+    const relCodeCaptainsFiles = absCodeCaptainsFiles.map((absPath) => path.relative(cwd, absPath));
+    logger.debug("Running with code captains files", { relCodeCaptainsFiles });
     // Compute the captains
-    const repoPolicy = await renderRepoPolicy(codeCaptainsFiles);
+    const repoPolicy = await renderRepoPolicy(relCodeCaptainsFiles);
     logger.debug("Rendered the following repo-wide policy", { repoPolicy });
     const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
-    // Set outputs
-    core.setOutput(CODE_CAPTAINS_OUTPUT, [...codeCaptains].sort().join(OUTPUT_SEPARATOR));
-    core.setOutput(MET_POLICY_FILES_OUTPUT, [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR));
+    logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
+    // Format and set outputs
+    const formattedCodeCaptains = codeCaptains.size > 0
+        ? OUTPUT_SEPARATOR +
+            [...codeCaptains]
+                .sort()
+                .map((captain) => `\`${captain}\``)
+                .join(OUTPUT_SEPARATOR)
+        : "";
+    const formattedFilePaths = metPolicyFilePaths.size > 0 ? OUTPUT_SEPARATOR + [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR) : "";
+    core.setOutput(CODE_CAPTAINS_OUTPUT, formattedCodeCaptains);
+    core.setOutput(MET_POLICY_FILES_OUTPUT, formattedFilePaths);
 };
 main();
 //# sourceMappingURL=main.js.map

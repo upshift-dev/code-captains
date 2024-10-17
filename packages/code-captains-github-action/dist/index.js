@@ -61185,12 +61185,12 @@ module.exports = {"version":"3.15.0"};
 /************************************************************************/
 var __webpack_exports__ = {};
 
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(6928);
 // EXTERNAL MODULE: ../../node_modules/.pnpm/@actions+core@1.11.1/node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(8560);
 // EXTERNAL MODULE: ../../node_modules/.pnpm/@actions+glob@0.5.0/node_modules/@actions/glob/lib/glob.js
 var glob = __nccwpck_require__(6256);
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(6928);
 // EXTERNAL MODULE: ../../node_modules/.pnpm/brace-expansion@2.0.1/node_modules/brace-expansion/index.js
 var brace_expansion = __nccwpck_require__(5428);
 ;// CONCATENATED MODULE: ../../node_modules/.pnpm/minimatch@10.0.1/node_modules/minimatch/dist/esm/assert-valid-pattern.js
@@ -63007,6 +63007,9 @@ const evaluateDirectoryPolicy = (directoryPolicy, changedFilePaths) => {
             // NOTE(thomas): At this point, paths should always start with ../
             //  We trim off the leading .. so that our comparisons view this as a "root" file
             return [relativePath.substring(2)];
+        }
+        if (relativePath === "") {
+            return `${external_path_.sep}cfp`;
         }
         throw new Error(`Unhandled relativized path: ${relativePath}`);
     });
@@ -67373,14 +67376,16 @@ var winston = __nccwpck_require__(7720);
 
 
 
+
 const CHANGED_FILES_INPUT = "changed-files";
-const CHANGED_FILES_SEPARATOR = "|";
+const CHANGED_FILES_SEPARATOR = "\\|";
 const CODE_CAPTAINS_PATTERN = "**/code-captains.yml";
 const CODE_CAPTAINS_OUTPUT = "code-captains";
 const MET_POLICY_FILES_OUTPUT = "met-policy-files";
-const OUTPUT_SEPARATOR = "|";
+const OUTPUT_SEPARATOR = "\n- ";
 // TODO(thomas): Allow setting log level via action input
 const logger = winston.createLogger({
+    level: "debug",
     transports: [new winston.transports.Console()],
 });
 const main = async () => {
@@ -67390,15 +67395,26 @@ const main = async () => {
     logger.debug("Running on changed files", { changedFiles });
     // Get all the code-captains YAML files
     const codeCaptainsGlobber = await glob.create(CODE_CAPTAINS_PATTERN);
-    const codeCaptainsFiles = await codeCaptainsGlobber.glob();
-    logger.debug("Running with code captains files", { codeCaptainsFiles });
+    const absCodeCaptainsFiles = await codeCaptainsGlobber.glob();
+    const cwd = process.cwd();
+    const relCodeCaptainsFiles = absCodeCaptainsFiles.map((absPath) => external_path_.relative(cwd, absPath));
+    logger.debug("Running with code captains files", { relCodeCaptainsFiles });
     // Compute the captains
-    const repoPolicy = await renderRepoPolicy(codeCaptainsFiles);
+    const repoPolicy = await renderRepoPolicy(relCodeCaptainsFiles);
     logger.debug("Rendered the following repo-wide policy", { repoPolicy });
     const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
-    // Set outputs
-    core.setOutput(CODE_CAPTAINS_OUTPUT, [...codeCaptains].sort().join(OUTPUT_SEPARATOR));
-    core.setOutput(MET_POLICY_FILES_OUTPUT, [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR));
+    logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
+    // Format and set outputs
+    const formattedCodeCaptains = codeCaptains.size > 0
+        ? OUTPUT_SEPARATOR +
+            [...codeCaptains]
+                .sort()
+                .map((captain) => `\`${captain}\``)
+                .join(OUTPUT_SEPARATOR)
+        : "";
+    const formattedFilePaths = metPolicyFilePaths.size > 0 ? OUTPUT_SEPARATOR + [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR) : "";
+    core.setOutput(CODE_CAPTAINS_OUTPUT, formattedCodeCaptains);
+    core.setOutput(MET_POLICY_FILES_OUTPUT, formattedFilePaths);
 };
 main();
 //# sourceMappingURL=main.js.map

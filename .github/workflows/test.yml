@@ -21,7 +21,17 @@ jobs:
                   exit 1
                   fi
 
-    test-code:
+    lint:
+        steps:
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
+            - uses: actions/checkout@v4.1.6
+            - uses: pnpm/action-setup@v4
+            - run: pnpm install
+            - run: pnpm run lint:check
+
+    test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/setup-node@v4
@@ -31,6 +41,3 @@ jobs:
             - uses: pnpm/action-setup@v4
             - run: pnpm install
             - run: pnpm run test
-
-    test-reusable-workflow:
-        uses: ./.github/workflows/code-captains-workflow.yml
