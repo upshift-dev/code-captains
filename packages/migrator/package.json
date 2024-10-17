@@ -8,7 +8,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "rm -fr dist && tsc --project tsconfig.json",
+        "build": "rm -fr dist && tsc --project tsconfig.build.json",
         "run": "tsx src/main.ts"
     },
     "dependencies": {

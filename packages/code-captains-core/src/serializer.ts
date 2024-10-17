@@ -34,9 +34,7 @@ export const writeRepoPolicy = async (repoPolicy: RepoPolicy) => {
             };
 
             const dir = dirname(sourceFilePath);
-            console.log("Creating directory if not exists: ", dir);
             await mkdir(dir, { recursive: true });
-            console.log("Writing file: ", sourceFilePath);
             await writeFile(sourceFilePath, stringify(directorySpec));
         }),
     );
