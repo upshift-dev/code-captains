@@ -32,10 +32,11 @@ const main = async () => {
     logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
     // Format and set outputs
     const formattedCodeCaptains = codeCaptains.size > 0
-        ? [...codeCaptains]
-            .sort()
-            .map((captain) => `\`${captain}\``)
-            .join(OUTPUT_SEPARATOR)
+        ? OUTPUT_SEPARATOR +
+            [...codeCaptains]
+                .sort()
+                .map((captain) => `\`${captain}\``)
+                .join(OUTPUT_SEPARATOR)
         : "";
     const formattedFilePaths = metPolicyFilePaths.size > 0 ? OUTPUT_SEPARATOR + [...metPolicyFilePaths].sort().join(OUTPUT_SEPARATOR) : "";
     core.setOutput(CODE_CAPTAINS_OUTPUT, formattedCodeCaptains);

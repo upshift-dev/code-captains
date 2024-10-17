@@ -40,7 +40,8 @@ const main = async () => {
     // Format and set outputs
     const formattedCodeCaptains =
         codeCaptains.size > 0
-            ? [...codeCaptains]
+            ? OUTPUT_SEPARATOR +
+              [...codeCaptains]
                   .sort()
                   .map((captain) => `\`${captain}\``)
                   .join(OUTPUT_SEPARATOR)
