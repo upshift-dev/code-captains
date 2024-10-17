@@ -23,7 +23,7 @@ jobs:
               uses: tj-actions/changed-files@v45
               with:
                   output_renamed_files_as_deleted_and_added: true
-                  separator: "|"
+                  separator: "\n"
 
             - name: Determine Code Captains
               id: code-captains

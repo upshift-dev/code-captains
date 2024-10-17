@@ -6,11 +6,11 @@ import { evaluateRepoPolicy, renderRepoPolicy } from "@upshift-dev/code-captains
 import winston from "winston";
 
 const CHANGED_FILES_INPUT = "changed-files";
-const CHANGED_FILES_SEPARATOR = "|";
+const CHANGED_FILES_SEPARATOR = "\n";
 const CODE_CAPTAINS_PATTERN = "**/code-captains.yml";
 const CODE_CAPTAINS_OUTPUT = "code-captains";
 const MET_POLICY_FILES_OUTPUT = "met-policy-files";
-const OUTPUT_SEPARATOR = "|";
+const OUTPUT_SEPARATOR = "\n";
 
 // TODO(thomas): Allow setting log level via action input
 const logger = winston.createLogger({
