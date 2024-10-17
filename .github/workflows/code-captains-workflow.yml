@@ -32,23 +32,34 @@ jobs:
               with:
                   changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
 
-            - name: Find Comment
+            - name: Find Code Captains comment
               uses: peter-evans/find-comment@v3
               id: find-comment
               with:
-                  issue-number: ${{ github.event.pull_request.number }}
-                  comment-author: "github-actions[bot]"
-                  body-includes: Code Captains
+              issue-number: ${{ github.event.pull_request.number }}
+              comment-author: "github-actions[bot]"
+              body-includes: Code Captains
 
-            - name: Create or update comment
+            - name: Record Code Captains on comment
+              if: ${{ steps.generate_output.outputs.result != '' }}
               uses: peter-evans/create-or-update-comment@v4
               with:
-                  comment-id: ${{ steps.find-comment.outputs.comment-id }}
-                  issue-number: ${{ github.event.pull_request.number }}
-                  body: |
-                      Determined the following Code Captains:
-                      ${{ steps.code-captains.outputs.code-captains }}
+              comment-id: ${{ steps.find-comment.outputs.comment-id }}
+              issue-number: ${{ github.event.pull_request.number }}
+              body: |
+                  Determined the following Code Captains:
 
-                      This PR includes changes that matched these policies:
-                      ${{ steps.code-captains.outputs.met-policy-files }}
-                  edit-mode: replace
+                  - ${{ steps.code-captains.outputs.code-captains }}
+
+                  This PR includes changes that matched these policies:
+                  - ${{ steps.code-captains.outputs.met-policy-files }}
+              edit-mode: replace
+
+            - name: Record empty Code Captains comment
+              if: ${{ steps.generate_output.outputs.result == '' }}
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+              comment-id: ${{ steps.find-comment.outputs.comment-id }}
+              issue-number: ${{ github.event.pull_request.number }}
+              body: No Code Captains are applicable to this PR.
+              edit-mode: replace
