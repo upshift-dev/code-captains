@@ -1,10 +1,23 @@
 import { relative, sep } from "path";
 
 import { minimatch } from "minimatch";
+import { z } from "zod";
 
 import { DirectoryPolicy, RepoPolicy } from "./ir/ir-types-v1.js";
 
-export type DirectoryPolicyResult = DirectoryPolicy & {
+export const evaluatePolicyResultSchema = z.object({
+    metPolicies: z.array(
+        z.object({
+            policyFilePath: z.string(),
+            captains: z.array(z.string()),
+            matchingFiles: z.array(z.string()),
+        }),
+    ),
+});
+
+export type EvaluatePolicyResult = z.infer<typeof evaluatePolicyResultSchema>;
+
+type DirectoryPolicyResult = DirectoryPolicy & {
     isPolicyMet: boolean;
     matchingFiles: string[];
 };
@@ -72,19 +85,22 @@ const evaluateDirectoryPolicy = (
     return { ...directoryPolicy, isPolicyMet: false, matchingFiles: [] };
 };
 
-export const evaluateRepoPolicy = async (repoPolicy: RepoPolicy, changedFilePaths: string[]) => {
+export const evaluateRepoPolicy = async (
+    repoPolicy: RepoPolicy,
+    changedFilePaths: string[],
+): Promise<EvaluatePolicyResult> => {
     // TODO(thomas): Logging for no match case
     const policyResults = repoPolicy.directoryPolicies.map((dirPolicy) =>
         evaluateDirectoryPolicy(dirPolicy, changedFilePaths),
     );
-    const metPolicies = policyResults.filter((result) => result.isPolicyMet);
-
-    // Build set of unique results
-    const uniqueCodeCaptains = new Set(metPolicies.flatMap((policy) => policy.codeCaptains));
-    const uniquePolicyFiles = new Set(metPolicies.map((policy) => policy.sourceFilePath));
 
     return {
-        codeCaptains: uniqueCodeCaptains,
-        metPolicyFilePaths: uniquePolicyFiles,
+        metPolicies: policyResults
+            .filter((result) => result.isPolicyMet)
+            .map((policy) => ({
+                policyFilePath: policy.sourceFilePath,
+                captains: policy.codeCaptains,
+                matchingFiles: policy.matchingFiles,
+            })),
     };
 };

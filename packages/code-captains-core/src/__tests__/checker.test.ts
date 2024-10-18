@@ -150,8 +150,19 @@ test.for(evaluateRepoPolicyTestCases)("evaluateRepoPolicy %#", async (testCase) 
 
     const result = await evaluateRepoPolicy(repoPolicy, changedFilePaths);
 
-    expect(result).toStrictEqual({
-        codeCaptains: new Set(expectedPolicies.flatMap((policy) => policy.codeCaptains)),
-        metPolicyFilePaths: new Set(expectedPolicies.map((policy) => policy.sourceFilePath)),
+    const uniqueCodeCaptains = result.metPolicies
+        .flatMap((policy) => policy.captains)
+        .reduce((acc, captain) => {
+            acc.add(captain);
+            return acc;
+        }, new Set<string>());
+    const uniquePolicyFilePaths = result.metPolicies.reduce((acc, policy) => {
+        acc.add(policy.policyFilePath);
+        return acc;
+    }, new Set<string>());
+
+    expect({ uniqueCodeCaptains, uniquePolicyFilePaths }).toStrictEqual({
+        uniqueCodeCaptains: new Set(expectedPolicies.flatMap((policy) => policy.codeCaptains)),
+        uniquePolicyFilePaths: new Set(expectedPolicies.map((policy) => policy.sourceFilePath)),
     });
 });

@@ -7,9 +7,7 @@ import winston from "winston";
 const CHANGED_FILES_INPUT = "changed-files";
 const CHANGED_FILES_SEPARATOR = "\\|";
 const CODE_CAPTAINS_PATTERN = "**/code-captains.yml";
-const CODE_CAPTAINS_OUTPUT = "code-captains";
-const MET_POLICY_FILES_OUTPUT = "met-policy-files";
-const OUTPUT_SEPARATOR = "\n- ";
+const CODE_CAPTAINS_OUTPUT = "code-captains-result";
 // TODO(thomas): Allow setting log level via action input
 const logger = winston.createLogger({
     level: "debug",
@@ -41,25 +39,16 @@ const main = async () => {
     // Compute the captains
     const repoPolicy = await renderRepoPolicy(relCodeCaptainsFiles);
     logger.debug("Rendered the following repo-wide policy", { repoPolicy });
-    const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
-    logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
-    // Format and set outputs
-    const formattedCodeCaptains = codeCaptains.size > 0
-        ? OUTPUT_SEPARATOR +
-            [...codeCaptains]
-                .sort()
-                .map((captain) => `\`${captain}\``)
-                .join(OUTPUT_SEPARATOR)
-        : "";
-    const formattedFilePaths = metPolicyFilePaths.size > 0
-        ? OUTPUT_SEPARATOR +
-            [...metPolicyFilePaths]
-                .sort()
-                .map((filePath) => buildFileMarkdownLink(filePath))
-                .join(OUTPUT_SEPARATOR)
-        : "";
-    core.setOutput(CODE_CAPTAINS_OUTPUT, formattedCodeCaptains);
-    core.setOutput(MET_POLICY_FILES_OUTPUT, formattedFilePaths);
+    const codeCaptainsResult = await evaluateRepoPolicy(repoPolicy, changedFiles);
+    logger.debug("Computed code captains", { codeCaptainsResult });
+    // Set output as JSON
+    const resultWithFileLinks = {
+        metPolicies: codeCaptainsResult.metPolicies.map((policy) => ({
+            ...policy,
+            policyFilePath: buildFileMarkdownLink(policy.policyFilePath),
+        })),
+    };
+    core.setOutput(CODE_CAPTAINS_OUTPUT, JSON.stringify(resultWithFileLinks));
 };
 main();
 //# sourceMappingURL=main.js.map
