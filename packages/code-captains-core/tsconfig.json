@@ -1,4 +1,10 @@
 {
     "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "./dist"
+    },
+    "exports": {
+        ".": "./dist/index.js"
+    },
     "include": ["src"]
 }

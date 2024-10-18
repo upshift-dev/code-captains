@@ -1,6 +1,5 @@
 {
-    "name": "@upshift-dev/migrator",
-    "private": true,
+    "name": "@upshift-dev/code-captains-migrator",
     "version": "0.1.0",
     "type": "module",
     "bin": "dist/main.js",
