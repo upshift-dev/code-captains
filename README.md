@@ -62,8 +62,7 @@ This will produce comments that look like this:
 
 <img src="resources/github-comment-example.png" alt="Github comment example" />
 
-> [!TIP]
-> You can choose if you want the comments to tag the folks or not.
+> [!TIP] You can choose if you want the comments to tag the folks or not.
 > You may not want notifications on because you notification volume can be overwhelming for certain codeowner workflows.
 >
 > See this [discussion](https://github.com/orgs/community/discussions/35673) for inspiration on this decision.
