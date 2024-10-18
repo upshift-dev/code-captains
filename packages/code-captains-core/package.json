@@ -4,6 +4,7 @@
     "author": "Titan Ops Corporation",
     "license": "MIT",
     "type": "module",
+    "main": "dist/main.js",
     "exports": {
         ".": {
             "import": "./dist/index.js",

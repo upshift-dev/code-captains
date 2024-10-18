@@ -2,3 +2,5 @@
 !packages/code-captains-github-action/dist/**
 
 node_modules
+
+.DS_Store
