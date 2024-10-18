@@ -23,13 +23,29 @@ jobs:
               id: changed-files
               uses: tj-actions/changed-files@v45
               with:
+                  escape_json: false
                   json: true
 
             - name: Determine Code Captains
               id: code-captains
-              uses: upshift-dev/code-captains@0.1.0
+              uses: upshift-dev/code-captains@0.1.5
               with:
                   changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
+
+            - name: Format comment contents
+              id: code-captains-comment-contents
+              run: |
+                  if echo '${{ steps.code-captains.outputs.code-captains-result }}' | jq -e '.metPolicies | length > 0'; then
+                    {
+                      echo "comment<<EOF"
+                      echo "Code Captains are required on this PR:"
+                      echo '${{ steps.code-captains.outputs.code-captains-result }}' | jq -r '.metPolicies[] |
+                        " - Policy: \(.policyFilePath)\n   Captains:\n     - \(.captains | map("`\(.)`") | join("\n     - "))" '
+                      echo EOF
+                    } >> "$GITHUB_OUTPUT"
+                  else
+                    echo "comment=No Code Captains are required on this PR." >> "$GITHUB_OUTPUT"
+                  fi
 
             - name: Find Code Captains comment
               uses: peter-evans/find-comment@v3
@@ -39,25 +55,10 @@ jobs:
                   comment-author: "github-actions[bot]"
                   body-includes: Code Captains
 
-            - name: Record Code Captains on comment
-              if: ${{ steps.code-captains.outputs.code-captains != '' }}
+            - name: Record Code Captains comment
               uses: peter-evans/create-or-update-comment@v4
               with:
                   comment-id: ${{ steps.find-comment.outputs.comment-id }}
                   issue-number: ${{ github.event.pull_request.number }}
-                  body: |
-                      Determined the following Code Captains:
-                      ${{ steps.code-captains.outputs.code-captains }}
-
-                      This PR includes changes that matched these policies:
-                      ${{ steps.code-captains.outputs.met-policy-files }}
-                  edit-mode: replace
-
-            - name: Record empty Code Captains comment
-              if: ${{ steps.code-captains.outputs.code-captains == '' }}
-              uses: peter-evans/create-or-update-comment@v4
-              with:
-                  comment-id: ${{ steps.find-comment.outputs.comment-id }}
-                  issue-number: ${{ github.event.pull_request.number }}
-                  body: No Code Captains are applicable to this PR.
+                  body: ${{ steps.code-captains-comment-contents.outputs.comment }}
                   edit-mode: replace
