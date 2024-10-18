@@ -48,7 +48,8 @@ The exact spec is as follows:
 
 To get started with captains in your repo, you can define captains files anywhere in your repo.
 
-> [!TIP] We recommend putting them as deep in your folder structure as they can go. This helps other devs understand the scope of the policies.
+> [!TIP]
+> We recommend putting them as deep in your folder structure as they can go. This helps other devs understand the scope of the policies.
 
 <b>Migrating from CODEOWNERS</b>
 
@@ -104,7 +105,8 @@ This will produce comments that look like this:
 
 <img src="resources/github-comment-example.png" alt="Github comment example" />
 
-> [!TIP] You can choose if you want the comments to tag the captains or not.
+> [!TIP]
+> You can choose if you want the comments to tag the captains or not.
 > You may not want notifications on because you notification volume can be overwhelming for certain codeowner workflows.
 >
 > See this [discussion](https://github.com/orgs/community/discussions/35673) for inspiration on this decision.
