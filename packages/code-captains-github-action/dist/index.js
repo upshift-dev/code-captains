@@ -67244,77 +67244,6 @@ minimatch.Minimatch = Minimatch;
 minimatch.escape = escape_escape;
 minimatch.unescape = unescape_unescape;
 //# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ../code-captains-core/dist/checker.js
-
-
-const anyPatternMatches = (relChangedFilePath, patterns) => {
-    return (patterns.find((pattern) => minimatch(relChangedFilePath, pattern, {
-        matchBase: true,
-        // Disable comments and negations for simplicity
-        nocomment: true,
-        nonegate: true,
-    })) !== undefined);
-};
-const evaluateDirectoryPolicy = (directoryPolicy, changedFilePaths) => {
-    // Relativize paths, and filter out ones that wouldn't be relevant (different subdir)
-    const relChangedFilePaths = changedFilePaths.flatMap((cfp) => {
-        const relativePath = (0,external_path_.relative)(directoryPolicy.sourceFilePath, cfp);
-        if (relativePath.startsWith(`..${external_path_.sep}..`) || relativePath.startsWith(external_path_.sep)) {
-            // The changed file isn't in the same directory, so ignore
-            return [];
-        }
-        if (relativePath.startsWith(`..${external_path_.sep}`)) {
-            // NOTE(thomas): At this point, paths should always start with ../
-            //  We trim off the leading .. so that our comparisons view this as a "root" file
-            return [relativePath.substring(2)];
-        }
-        if (relativePath === "") {
-            return `${external_path_.sep}cfp`;
-        }
-        throw new Error(`Unhandled relativized path: ${relativePath}`);
-    });
-    // If no files to compare
-    if (relChangedFilePaths.length === 0)
-        return { ...directoryPolicy, isPolicyMet: false, matchingFiles: [] };
-    // Exclude takes precedence, so check that first and short-circuit
-    const matchingExcludedFiles = relChangedFilePaths.filter((rcfp) => anyPatternMatches(rcfp, directoryPolicy.fileFilter.excludePatterns));
-    if (matchingExcludedFiles.length > 0)
-        return { ...directoryPolicy, isPolicyMet: false, matchingFiles: matchingExcludedFiles };
-    // all-files case
-    const { includePatterns } = directoryPolicy.fileFilter;
-    if (includePatterns === "all-files")
-        return {
-            ...directoryPolicy,
-            isPolicyMet: true,
-            matchingFiles: relChangedFilePaths,
-        };
-    // Include case
-    const matchingIncludedFiles = relChangedFilePaths.filter((rcfp) => anyPatternMatches(rcfp, includePatterns));
-    if (matchingIncludedFiles.length > 0)
-        return { ...directoryPolicy, isPolicyMet: true, matchingFiles: matchingIncludedFiles };
-    // If nothing matched
-    return { ...directoryPolicy, isPolicyMet: false, matchingFiles: [] };
-};
-const evaluateRepoPolicy = async (repoPolicy, changedFilePaths) => {
-    // TODO(thomas): Logging for no match case
-    const policyResults = repoPolicy.directoryPolicies.map((dirPolicy) => evaluateDirectoryPolicy(dirPolicy, changedFilePaths));
-    const metPolicies = policyResults.filter((result) => result.isPolicyMet);
-    // Build set of unique results
-    const uniqueCodeCaptains = new Set(metPolicies.flatMap((policy) => policy.codeCaptains));
-    const uniquePolicyFiles = new Set(metPolicies.map((policy) => policy.sourceFilePath));
-    return {
-        codeCaptains: uniqueCodeCaptains,
-        metPolicyFilePaths: uniquePolicyFiles,
-    };
-};
-//# sourceMappingURL=checker.js.map
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(9896);
-// EXTERNAL MODULE: ../../node_modules/.pnpm/yaml@2.6.0/node_modules/yaml/dist/index.js
-var dist = __nccwpck_require__(5781);
-;// CONCATENATED MODULE: ../code-captains-core/dist/ir/ir-types-v1.js
-const AllFiles = "all-files";
-//# sourceMappingURL=ir-types-v1.js.map
 ;// CONCATENATED MODULE: ../../node_modules/.pnpm/zod@3.23.8/node_modules/zod/lib/index.mjs
 var util;
 (function (util) {
@@ -71553,6 +71482,86 @@ var z = /*#__PURE__*/Object.freeze({
 
 
 
+;// CONCATENATED MODULE: ../code-captains-core/dist/checker.js
+
+
+
+const evaluatePolicyResultSchema = z.object({
+    metPolicies: z.array(z.object({
+        policyFilePath: z.string(),
+        captains: z.array(z.string()),
+        matchingFiles: z.array(z.string()),
+    })),
+});
+const anyPatternMatches = (relChangedFilePath, patterns) => {
+    return (patterns.find((pattern) => minimatch(relChangedFilePath, pattern, {
+        matchBase: true,
+        // Disable comments and negations for simplicity
+        nocomment: true,
+        nonegate: true,
+    })) !== undefined);
+};
+const evaluateDirectoryPolicy = (directoryPolicy, changedFilePaths) => {
+    // Relativize paths, and filter out ones that wouldn't be relevant (different subdir)
+    const relChangedFilePaths = changedFilePaths.flatMap((cfp) => {
+        const relativePath = (0,external_path_.relative)(directoryPolicy.sourceFilePath, cfp);
+        if (relativePath.startsWith(`..${external_path_.sep}..`) || relativePath.startsWith(external_path_.sep)) {
+            // The changed file isn't in the same directory, so ignore
+            return [];
+        }
+        if (relativePath.startsWith(`..${external_path_.sep}`)) {
+            // NOTE(thomas): At this point, paths should always start with ../
+            //  We trim off the leading .. so that our comparisons view this as a "root" file
+            return [relativePath.substring(2)];
+        }
+        if (relativePath === "") {
+            return `${external_path_.sep}cfp`;
+        }
+        throw new Error(`Unhandled relativized path: ${relativePath}`);
+    });
+    // If no files to compare
+    if (relChangedFilePaths.length === 0)
+        return { ...directoryPolicy, isPolicyMet: false, matchingFiles: [] };
+    // Exclude takes precedence, so check that first and short-circuit
+    const matchingExcludedFiles = relChangedFilePaths.filter((rcfp) => anyPatternMatches(rcfp, directoryPolicy.fileFilter.excludePatterns));
+    if (matchingExcludedFiles.length > 0)
+        return { ...directoryPolicy, isPolicyMet: false, matchingFiles: matchingExcludedFiles };
+    // all-files case
+    const { includePatterns } = directoryPolicy.fileFilter;
+    if (includePatterns === "all-files")
+        return {
+            ...directoryPolicy,
+            isPolicyMet: true,
+            matchingFiles: relChangedFilePaths,
+        };
+    // Include case
+    const matchingIncludedFiles = relChangedFilePaths.filter((rcfp) => anyPatternMatches(rcfp, includePatterns));
+    if (matchingIncludedFiles.length > 0)
+        return { ...directoryPolicy, isPolicyMet: true, matchingFiles: matchingIncludedFiles };
+    // If nothing matched
+    return { ...directoryPolicy, isPolicyMet: false, matchingFiles: [] };
+};
+const evaluateRepoPolicy = async (repoPolicy, changedFilePaths) => {
+    // TODO(thomas): Logging for no match case
+    const policyResults = repoPolicy.directoryPolicies.map((dirPolicy) => evaluateDirectoryPolicy(dirPolicy, changedFilePaths));
+    return {
+        metPolicies: policyResults
+            .filter((result) => result.isPolicyMet)
+            .map((policy) => ({
+            policyFilePath: policy.sourceFilePath,
+            captains: policy.codeCaptains,
+            matchingFiles: policy.matchingFiles,
+        })),
+    };
+};
+//# sourceMappingURL=checker.js.map
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(9896);
+// EXTERNAL MODULE: ../../node_modules/.pnpm/yaml@2.6.0/node_modules/yaml/dist/index.js
+var dist = __nccwpck_require__(5781);
+;// CONCATENATED MODULE: ../code-captains-core/dist/ir/ir-types-v1.js
+const AllFiles = "all-files";
+//# sourceMappingURL=ir-types-v1.js.map
 ;// CONCATENATED MODULE: ../code-captains-core/dist/spec/directory-spec-v1.js
 
 const directorySpecSchema = z.object({
@@ -71641,9 +71650,7 @@ var winston = __nccwpck_require__(7720);
 const CHANGED_FILES_INPUT = "changed-files";
 const CHANGED_FILES_SEPARATOR = "\\|";
 const CODE_CAPTAINS_PATTERN = "**/code-captains.yml";
-const CODE_CAPTAINS_OUTPUT = "code-captains";
-const MET_POLICY_FILES_OUTPUT = "met-policy-files";
-const OUTPUT_SEPARATOR = "\n- ";
+const CODE_CAPTAINS_OUTPUT = "code-captains-result";
 // TODO(thomas): Allow setting log level via action input
 const logger = winston.createLogger({
     level: "debug",
@@ -71675,25 +71682,16 @@ const main = async () => {
     // Compute the captains
     const repoPolicy = await renderRepoPolicy(relCodeCaptainsFiles);
     logger.debug("Rendered the following repo-wide policy", { repoPolicy });
-    const { codeCaptains, metPolicyFilePaths } = await evaluateRepoPolicy(repoPolicy, changedFiles);
-    logger.debug("Computed code captains", { codeCaptains, metPolicyFilePaths });
-    // Format and set outputs
-    const formattedCodeCaptains = codeCaptains.size > 0
-        ? OUTPUT_SEPARATOR +
-            [...codeCaptains]
-                .sort()
-                .map((captain) => `\`${captain}\``)
-                .join(OUTPUT_SEPARATOR)
-        : "";
-    const formattedFilePaths = metPolicyFilePaths.size > 0
-        ? OUTPUT_SEPARATOR +
-            [...metPolicyFilePaths]
-                .sort()
-                .map((filePath) => buildFileMarkdownLink(filePath))
-                .join(OUTPUT_SEPARATOR)
-        : "";
-    core.setOutput(CODE_CAPTAINS_OUTPUT, formattedCodeCaptains);
-    core.setOutput(MET_POLICY_FILES_OUTPUT, formattedFilePaths);
+    const codeCaptainsResult = await evaluateRepoPolicy(repoPolicy, changedFiles);
+    logger.debug("Computed code captains", { codeCaptainsResult });
+    // Set output as JSON
+    const resultWithFileLinks = {
+        metPolicies: codeCaptainsResult.metPolicies.map((policy) => ({
+            ...policy,
+            policyFilePath: buildFileMarkdownLink(policy.policyFilePath),
+        })),
+    };
+    core.setOutput(CODE_CAPTAINS_OUTPUT, JSON.stringify(resultWithFileLinks));
 };
 main();
 //# sourceMappingURL=main.js.map
