@@ -71,10 +71,10 @@ To use the captains files, we distribute a Github action which understands how t
 
 ```yaml
 - name: Determine code captains
-id: code-captains
-uses: upshift-dev/code-captains@1.0.0
-with:
-    changed-files: <json-string-array-of-file-paths>
+  id: code-captains
+  uses: upshift-dev/code-captains@1.0.0
+  with:
+      changed-files: <json-string-array-of-file-paths>
 ```
 
 <b>Inputs:</b>
