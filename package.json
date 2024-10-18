@@ -8,12 +8,8 @@
         "lint:check": "prettier --config ./.prettierrc --check . && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "lint:fix": "prettier --config ./.prettierrc --write . && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix"
     },
-    "keywords": [
-        "CODEOWNER",
-        "captain",
-        "monorepo"
-    ],
     "author": "Titan Ops Corporation",
+    "license": "MIT",
     "packageManager": "pnpm@9.12.1",
     "devDependencies": {
         "eslint": "catalog:",
