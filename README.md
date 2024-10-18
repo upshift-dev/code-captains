@@ -17,23 +17,24 @@ Here's some YAML you can use to get started straight away:
 
 ```yaml
 - name: Checkout all code-captains.yml files on target branch
-uses: actions/checkout@v4
-with:
-    ref: ${{ github.base_ref }}
-    sparse-checkout: code-captains.yml
+  uses: actions/checkout@v4
+  with:
+      ref: ${{ github.base_ref }}
+      sparse-checkout: code-captains.yml
+      sparse-checkout-cone-mode: false
 
 - name: Determine changed files
-id: changed-files
-uses: tj-actions/changed-files@v45
-with:
-    output_renamed_files_as_deleted_and_added: true
-    separator: "|"
+  id: changed-files
+  uses: tj-actions/changed-files@v45
+  with:
+      escape_json: false
+      json: true
 
-- name: Determine code captains
-id: code-captains
-uses: upshift-dev/code-captains@1.0.0
-with:
-    changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
+- name: Determine Code Captains
+  id: code-captains
+  uses: upshift-dev/code-captains@1.0.0
+  with:
+      changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
 ```
 
 From there, you can access the outputs of the Github action to determine who the code captains are for the files that have changed.
