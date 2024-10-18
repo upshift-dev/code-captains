@@ -1,14 +1,15 @@
 {
     "name": "@upshift-dev/code-captains-core",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": "Titan Ops Corporation",
     "license": "MIT",
     "type": "module",
     "exports": {
-        ".": "./src/index.ts"
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./src/index.ts"
+        }
     },
-    "main": "dist/index.js",
-    "types": "./src/index.ts",
     "files": [
         "dist"
     ],

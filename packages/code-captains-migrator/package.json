@@ -1,11 +1,10 @@
 {
     "name": "@upshift-dev/code-captains-migrator",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": "Titan Ops Corporation",
     "license": "MIT",
     "type": "module",
     "main": "dist/main.js",
-    "bin": "dist/main.js",
     "files": [
         "dist"
     ],
