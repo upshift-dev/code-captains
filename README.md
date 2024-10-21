@@ -45,6 +45,8 @@ From there, you can access the outputs of the Github action to determine who the
     -   `policyFilePath`: path to the policy file that was matched
     -   `captains`: array of captains that matched the policy
     -   `matchingFiles`: array of files that matched the policy include/exclude filters
+    -   `isPolicySatisfied`: boolean whether PR approvers satisfy the policy
+-   `areAllPoliciesSatisfied`: boolean, whether all `metPolicies` are satisfied
 
 We also ship a re-usable workflow that you can use to help PR authors understand which captains they probably need to get approval from or consult with.
 

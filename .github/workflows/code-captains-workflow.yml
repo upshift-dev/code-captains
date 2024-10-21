@@ -7,7 +7,6 @@ jobs:
     code-captains:
         permissions:
             contents: read # For code-captains.yml files
-            org: read # For team membership
             pull-requests: write # Read PR approvers and comment on PRs
 
         runs-on: ubuntu-latest
@@ -41,7 +40,7 @@ jobs:
                       echo "comment<<EOF"
                       echo "Code Captains are required on this PR:"
                       echo '${{ steps.code-captains.outputs.code-captains-result }}' | jq -r '.metPolicies[] |
-                        " - Policy: \(.policyFilePath)\n   Captains:\n     - \(.captains | map("`\(.)`") | join("\n     - "))" '
+                        " - Policy: \(.policyFilePath) \((if .isPolicySatisfied then ":white_check_mark:" else ":x:" end))\n   Captains:\n     - \(.captains | map("`\(.)`") | join("\n     - "))" '
                       echo EOF
                     } >> "$GITHUB_OUTPUT"
                   else
@@ -63,3 +62,12 @@ jobs:
                   issue-number: ${{ github.event.pull_request.number }}
                   body: ${{ steps.code-captains-comment-contents.outputs.comment }}
                   edit-mode: replace
+
+            - name: Check if Code Captains policies are satisfied
+              run: |
+                  if echo '${{ steps.code-captains.outputs.code-captains-result }}' | jq -e '.areAllPoliciesSatisfied == true'; then
+                      echo "All policies are satisfied."
+                  else
+                      echo "One or more Code Captains policies are not satisfied."
+                      exit 1  # Fail the action
+                  fi
