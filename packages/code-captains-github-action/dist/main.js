@@ -28,6 +28,7 @@ const buildFileMarkdownLink = (filePath) => {
     const { serverUrl, repo } = github.context;
     const baseRef = process.env.GITHUB_BASE_REF;
     if (!baseRef) {
+        logger.debug("GITHUB_BASE_REF is missing. Using normal file path...");
         return filePath;
     }
     const targetFileUrl = encodeURI(`${serverUrl}/${repo.owner}/${repo.repo}/blob/${baseRef}/${filePath}`);
@@ -62,20 +63,26 @@ const parseCaptains = (captains) => {
         .map((teamStr) => {
         const slashIndex = teamStr.indexOf("/");
         return {
-            org: teamStr.substring(1, slashIndex).toLowerCase(),
+            org: teamStr.substring(0, slashIndex).replace("@", "").toLowerCase(),
             teamSlug: teamStr.substring(slashIndex + 1).toLowerCase(),
         };
     });
     return { userCaptains, teamCaptains };
 };
 const didAnyCaptainApprove = async (githubClient, captains, approvers) => {
+    if (approvers.length === 0) {
+        logger.debug("No one has approved the PR yet");
+        return false;
+    }
     const { userCaptains, teamCaptains } = parseCaptains(captains);
     // NOTE(thomas): We check for user approvers first so we can avoid API calls for team membership if there's a match
+    logger.debug("Checking approvers against user captains", { approvers, userCaptains });
     if (approvers.some((approver) => userCaptains.includes(approver))) {
         return true;
     }
     // Get all the team members for the listed teams
     const teamMembers = (await Promise.all(teamCaptains.map((teamCaptain) => getTeamMembers(githubClient, teamCaptain.org, teamCaptain.teamSlug)))).flat();
+    logger.debug("Checking approvers against team members", { approvers, teamMembers });
     return approvers.some((approver) => teamMembers.includes(approver));
 };
 const main = async () => {
@@ -104,17 +111,19 @@ const main = async () => {
         // Check if approvers satisfy the policies
         const githubClient = github.getOctokit(token);
         const approvers = await getAllApprovers(githubClient, github.context.repo, pullNumber);
-        const processedResults = {
-            metPolicies: await Promise.all(codeCaptainsResult.metPolicies.map(async (policy) => ({
-                ...policy,
-                policyFilePath: buildFileMarkdownLink(policy.policyFilePath),
-                isPolicySatisfied: await didAnyCaptainApprove(githubClient, policy.captains, approvers),
-            }))),
+        const metPolicies = await Promise.all(codeCaptainsResult.metPolicies.map(async (policy) => ({
+            ...policy,
+            policyFilePath: buildFileMarkdownLink(policy.policyFilePath),
+            isPolicySatisfied: await didAnyCaptainApprove(githubClient, policy.captains, approvers),
+        })));
+        const result = {
+            metPolicies,
+            areAllPoliciesSatisfied: metPolicies.every((policy) => policy.isPolicySatisfied),
         };
-        core.setOutput(CODE_CAPTAINS_OUTPUT, JSON.stringify(processedResults));
+        core.setOutput(CODE_CAPTAINS_OUTPUT, JSON.stringify(result));
     }
     else {
-        const result = { metPolicies: [] };
+        const result = { metPolicies: [], areAllPoliciesSatisfied: true };
         core.setOutput(CODE_CAPTAINS_OUTPUT, JSON.stringify(result));
     }
 };
