@@ -42,7 +42,7 @@ The exact spec is as follows:
     -   `exclude` (default: `none`): A list of file patterns that are excluded from this policy.
     -   `captains`: A list of GitHub usernames/team names that are responsible for the files covered by this policy.
         Team names should follow the format `@<org>/<team_slug>`.
-        If you plan to use team names, see the Usage->Inputs section below to configure a token for the action.
+        If you plan to use team names, see the Usage&rarr;Inputs section below to configure a token for the action.
 
 ### Installation
 
@@ -82,7 +82,7 @@ To use the captains files, we distribute a Github action which understands how t
 <b>Inputs:</b>
 
 -   `changed-files`: JSON string array of file paths that have changed in the PR.
--   `token` (default: GitHub token): Must be overridden if using team-based captains.
+-   `token` (default: `GITHUB_TOKEN`): Must be overridden if using team-based captains.
     This token is used to check PR approvers and team membership. The token used by default does not have access to the `org:read` scope.
     To use this, set up a token and follow best practices for
     [using secrets in GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions).
