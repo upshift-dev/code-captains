@@ -71648,6 +71648,7 @@ var winston = __nccwpck_require__(7720);
 
 
 const CHANGED_FILES_INPUT = "changed-files";
+const TOKEN_INPUT = "token";
 const CODE_CAPTAINS_PATTERN = "**/code-captains.yml";
 const CODE_CAPTAINS_OUTPUT = "code-captains-result";
 // TODO(thomas): Allow setting log level via action input
@@ -71722,10 +71723,7 @@ const didAnyCaptainApprove = async (githubClient, captains, approvers) => {
 };
 const main = async () => {
     // Parse required input
-    const token = process.env.GITHUB_TOKEN;
-    if (!token) {
-        throw new Error("GITHUB_TOKEN was not set");
-    }
+    const token = core.getInput(TOKEN_INPUT, { required: true });
     const pullPayload = github.context.payload.pull_request;
     if (pullPayload == null) {
         throw new Error("This action requires the PR payload");
@@ -71750,7 +71748,7 @@ const main = async () => {
         const githubClient = github.getOctokit(token);
         const approvers = await getAllApprovers(githubClient, github.context.repo, pullNumber);
         const processedResults = {
-            metPolicies: Promise.all(codeCaptainsResult.metPolicies.map(async (policy) => ({
+            metPolicies: await Promise.all(codeCaptainsResult.metPolicies.map(async (policy) => ({
                 ...policy,
                 policyFilePath: buildFileMarkdownLink(policy.policyFilePath),
                 isPolicySatisfied: await didAnyCaptainApprove(githubClient, policy.captains, approvers),
