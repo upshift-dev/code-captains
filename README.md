@@ -55,6 +55,8 @@ name: Check Code Captains
 
 on:
     pull_request:
+    pull_request_review:
+        types: [submitted]
 
 jobs:
     check-code-captains:
