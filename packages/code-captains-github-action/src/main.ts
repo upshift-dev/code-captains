@@ -137,11 +137,13 @@ const main = async () => {
         const githubClient = github.getOctokit(token);
         const approvers = await getAllApprovers(githubClient, github.context.repo, pullNumber);
         const processedResults = {
-            metPolicies: codeCaptainsResult.metPolicies.map((policy) => ({
-                ...policy,
-                policyFilePath: buildFileMarkdownLink(policy.policyFilePath),
-                isPolicySatisfied: didAnyCaptainApprove(githubClient, policy.captains, approvers),
-            })),
+            metPolicies: Promise.all(
+                codeCaptainsResult.metPolicies.map(async (policy) => ({
+                    ...policy,
+                    policyFilePath: buildFileMarkdownLink(policy.policyFilePath),
+                    isPolicySatisfied: await didAnyCaptainApprove(githubClient, policy.captains, approvers),
+                })),
+            ),
         };
 
         core.setOutput(CODE_CAPTAINS_OUTPUT, JSON.stringify(processedResults));

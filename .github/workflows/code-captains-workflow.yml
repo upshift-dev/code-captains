@@ -6,8 +6,9 @@ on:
 jobs:
     code-captains:
         permissions:
-            contents: read
-            pull-requests: write
+            contents: read # For code-captains.yml files
+            org: read # For team membership
+            pull-requests: write # Read PR approvers and comment on PRs
 
         runs-on: ubuntu-latest
 
