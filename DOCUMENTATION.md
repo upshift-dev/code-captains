@@ -41,6 +41,8 @@ The exact spec is as follows:
     -   `include` (default: `all-files`): A list of file patterns that are covered by this policy.
     -   `exclude` (default: `none`): A list of file patterns that are excluded from this policy.
     -   `captains`: A list of GitHub usernames/team names that are responsible for the files covered by this policy.
+        Team names should follow the format `@<org>/<team_slug>`.
+        If you plan to use team names, see the Usage&rarr;Inputs section below to configure a token for the action.
 
 ### Installation
 
@@ -80,6 +82,11 @@ To use the captains files, we distribute a Github action which understands how t
 <b>Inputs:</b>
 
 -   `changed-files`: JSON string array of file paths that have changed in the PR.
+-   `token` (default: `GITHUB_TOKEN`): Must be overridden if using team-based captains.
+    This token is used to check PR approvers and team membership. The token used by default does not have access to the `org:read` scope.
+    To use this, set up a token and follow best practices for
+    [using secrets in GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions).
+    This token will need the `org:read` and `pull_requests:write` scopes.
 
 <b>Outputs:</b>
 
@@ -87,6 +94,8 @@ To use the captains files, we distribute a Github action which understands how t
     -   `policyFilePath`: path to the policy file that was matched
     -   `captains`: array of captains that matched the policy
     -   `matchingFiles`: array of files that matched the policy include/exclude filters
+    -   `isPolicySatisfied`: boolean whether PR approvers satisfy the policy
+-   `areAllPoliciesSatisfied`: boolean, whether all `metPolicies` are satisfied
 
 We also ship a re-usable workflow that you can use specifically for what we see the main use case being right now: helping PR authors understand who the captains are for the files they changed.
 
@@ -95,6 +104,8 @@ name: Check Code Captains
 
 on:
     pull_request:
+    pull_request_review:
+        types: [submitted]
 
 jobs:
     check-code-captains:
