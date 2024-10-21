@@ -1,7 +1,7 @@
 {
     "name": "@upshift-dev/code-captains-github-action",
     "private": true,
-    "version": "0.2.0",
+    "version": "1.0.0",
     "author": "Titan Ops Corporation",
     "license": "MIT",
     "type": "module",
