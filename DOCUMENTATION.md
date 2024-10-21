@@ -116,6 +116,9 @@ This will produce comments that look like this:
 
 <img src="resources/github-comment-example.png" alt="Github comment example" />
 
+The final step in the workflow will fail if the code captains policies have not been satisfied by the reviewers.
+You can make this check required to strictly enforce code captains.
+
 > [!TIP]
 > You can choose if you want the comments to tag the captains or not.
 > You may not want notifications on because you notification volume can be overwhelming for certain codeowner workflows.
