@@ -110,6 +110,7 @@ on:
 jobs:
     check-code-captains:
         uses: upshift-dev/code-captains/.github/workflows/code-captains-workflow.yml@1.0.0
+        token: ${{ secrets.CODE_CAPTAINS_TOKEN }} # If using team-based captains
 ```
 
 This will produce comments that look like this:
