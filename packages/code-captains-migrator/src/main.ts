@@ -9,7 +9,7 @@ const main = async () => {
         .name("@upshift-dev/migrator")
         .description("A CLI to help migrate CODEOWNERS into captain files.")
         // todo: come up with clever way to keep this in sync with package.json
-        .version("1.0.0");
+        .version("1.0.1");
 
     program
         .command("migrate")
