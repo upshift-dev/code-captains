@@ -60,7 +60,7 @@ For your convenience, we provide a migration tool that will convert your CODEOWN
 You can run:
 
 ```bash
-npx @upshift-dev/code-captains-migrator migrate run [path-to-codeowners-file]
+npx @upshift-dev/code-captains-migrator migrate [path-to-codeowners-file]
 ```
 
 If you exclude the file path, the default path is `./CODEOWNERS`.
