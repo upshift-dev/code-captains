@@ -37,7 +37,7 @@ jobs:
               uses: upshift-dev/code-captains@1.0.0
               with:
                   changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
-                  token: ${{ secrets.token }}
+                  token: ${{ secrets.token || github.token }}
 
             - name: Format comment contents
               id: code-captains-comment-contents
