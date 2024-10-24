@@ -1,5 +1,5 @@
 import { once } from "events";
-import { createReadStream } from "fs";
+import { createReadStream, existsSync, statSync } from "fs";
 import { createInterface } from "readline/promises";
 
 import { DirectoryPolicy, writeRepoPolicy } from "@upshift-dev/code-captains-core";
@@ -42,10 +42,19 @@ export const migrateEntry = (line: string, maximizeDepth: boolean = false): Dire
         pathIndex += 1;
     }
 
+    let pattern = pathElements.slice(pathIndex).join("/");
+    if (!path.endsWith("*")) {
+        // If the path doesn't end with *, we stat the FS entry to see if it is a dir or a file
+        // If it's a dir, we append /** to the end
+        if (existsSync(path) && statSync(path).isDirectory()) {
+            pattern += "/**";
+        }
+    }
+
     return {
         sourceFilePath: `${sourceFilePathPrefix}code-captains.yml`,
         fileFilter: {
-            includePatterns: [pathElements.slice(pathIndex).join("/")],
+            includePatterns: [pattern],
             excludePatterns: [],
         },
         codeCaptains: actualCaptains,

@@ -90,6 +90,32 @@ const migrateEntryTestCases: { line: string; maximizeDepth: boolean; policy: Dir
             codeCaptains: ["@upshift"],
         },
     },
+    {
+        // NOTE(thomas): This test depends on directories in our repo and the test CWD
+        line: "packages @upshift",
+        maximizeDepth: true,
+        policy: {
+            sourceFilePath: "code-captains.yml",
+            fileFilter: {
+                includePatterns: ["packages/**"],
+                excludePatterns: [],
+            },
+            codeCaptains: ["@upshift"],
+        },
+    },
+    {
+        // NOTE(thomas): This test depends on directories in our repo and the test CWD
+        line: "packages/code-captains-migrator/src @migrator",
+        maximizeDepth: true,
+        policy: {
+            sourceFilePath: "packages/code-captains-migrator/code-captains.yml",
+            fileFilter: {
+                includePatterns: ["src/**"],
+                excludePatterns: [],
+            },
+            codeCaptains: ["@migrator"],
+        },
+    },
 ];
 
 test.for(migrateEntryTestCases)("migrateEntry %#", async (testCase) => {
