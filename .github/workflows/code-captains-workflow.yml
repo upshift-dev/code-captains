@@ -2,6 +2,12 @@ name: Code Captains
 
 on:
     workflow_call:
+        secrets:
+            token:
+                description: |
+                    GitHub token used to fetch PR approvers and team members from Github's API.
+                    Required if using team-based captains.
+                required: false
 
 jobs:
     code-captains:
@@ -28,9 +34,10 @@ jobs:
 
             - name: Determine Code Captains
               id: code-captains
-              uses: upshift-dev/code-captains@1.0.0
+              uses: upshift-dev/code-captains@1.0.1
               with:
                   changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
+                  token: ${{ secrets.token || github.token }}
 
             - name: Format comment contents
               id: code-captains-comment-contents

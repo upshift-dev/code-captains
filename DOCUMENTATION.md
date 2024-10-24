@@ -74,7 +74,7 @@ To use the captains files, we distribute a Github action which understands how t
 ```yaml
 - name: Determine code captains
   id: code-captains
-  uses: upshift-dev/code-captains@1.0.0
+  uses: upshift-dev/code-captains@1.0.1
   with:
       changed-files: <json-string-array-of-file-paths>
 ```
@@ -109,7 +109,8 @@ on:
 
 jobs:
     check-code-captains:
-        uses: upshift-dev/code-captains/.github/workflows/code-captains-workflow.yml@1.0.0
+        uses: upshift-dev/code-captains/.github/workflows/code-captains-workflow.yml@1.0.1
+        token: ${{ secrets.CODE_CAPTAINS_TOKEN }} # If using team-based captains
 ```
 
 This will produce comments that look like this:
