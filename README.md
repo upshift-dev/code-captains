@@ -32,7 +32,7 @@ Here's some YAML you can use to get started straight away:
 
 - name: Determine Code Captains
   id: code-captains
-  uses: upshift-dev/code-captains@1.0.1
+  uses: upshift-dev/code-captains@1.0.2
   with:
       changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
 ```
@@ -60,7 +60,7 @@ on:
 
 jobs:
     check-code-captains:
-        uses: upshift-dev/code-captains/.github/workflows/code-captains-workflow.yml@1.0.1
+        uses: upshift-dev/code-captains/.github/workflows/code-captains-workflow.yml@1.0.2
 ```
 
 This will produce comments that look like this:

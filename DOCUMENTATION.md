@@ -30,6 +30,7 @@ policies:
           - "@frontend-infra"
     - include:
           - .gitignore
+          - .github/**
       captains:
           - "@git-experts"
 ```
@@ -43,6 +44,10 @@ The exact spec is as follows:
     -   `captains`: A list of GitHub usernames/team names that are responsible for the files covered by this policy.
         Team names should follow the format `@<org>/<team_slug>`.
         If you plan to use team names, see the Usage&rarr;Inputs section below to configure a token for the action.
+
+> [!IMPORTANT]
+> Code captains uses glob expressions for patterns and evaluates them with [minimatch](https://github.com/isaacs/minimatch).
+> These sometimes differ from the CODEOWNERS/gitignore-style patterns. For example, the CODEOWNERS `directory/` pattern would be represented as `directory/**` in code captains.
 
 ### Installation
 
@@ -74,7 +79,7 @@ To use the captains files, we distribute a Github action which understands how t
 ```yaml
 - name: Determine code captains
   id: code-captains
-  uses: upshift-dev/code-captains@1.0.1
+  uses: upshift-dev/code-captains@1.0.2
   with:
       changed-files: <json-string-array-of-file-paths>
 ```
@@ -109,7 +114,7 @@ on:
 
 jobs:
     check-code-captains:
-        uses: upshift-dev/code-captains/.github/workflows/code-captains-workflow.yml@1.0.1
+        uses: upshift-dev/code-captains/.github/workflows/code-captains-workflow.yml@1.0.2
         token: ${{ secrets.CODE_CAPTAINS_TOKEN }} # If using team-based captains
 ```
 

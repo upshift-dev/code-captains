@@ -34,7 +34,7 @@ jobs:
 
             - name: Determine Code Captains
               id: code-captains
-              uses: upshift-dev/code-captains@1.0.1
+              uses: upshift-dev/code-captains@1.0.2
               with:
                   changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
                   token: ${{ secrets.token || github.token }}
