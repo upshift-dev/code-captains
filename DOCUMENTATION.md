@@ -76,8 +76,8 @@ To test the policies in your `code-captains.yml` file(s), the tool comes with an
 
 You can run this from the root of your repo:
 
-```bash
-npx @upshift-dev/code-captains-migrator test [path-to-changed-file]...>
+```text
+npx @upshift-dev/code-captains-migrator test [path-to-changed-file]...
 ```
 
 ### Usage
