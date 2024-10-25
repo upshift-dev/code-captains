@@ -1,8 +1,14 @@
+import { promises as fs } from "fs";
+import path, { relative } from "path";
+
 import { evaluateRepoPolicy, renderRepoPolicy } from "@upshift-dev/code-captains-core";
-import { glob } from "glob";
 
 export const runTestEvaluation = async (changedFiles: string[], verbose: boolean) => {
-    const codeCaptainsFiles = await glob("**/code-captains.yml");
+    const cwd = process.cwd();
+    const codeCaptainsFiles = (await fs.readdir(cwd, { withFileTypes: true, recursive: true }))
+        .filter((entry) => entry.name === "code-captains.yml" && !entry.isDirectory())
+        .map((entry) => relative(cwd, path.join(entry.parentPath, entry.name)));
+
     const repoPolicy = await renderRepoPolicy(codeCaptainsFiles);
     if (verbose) {
         console.log("Rendered the following repo-wide policy:", JSON.stringify(repoPolicy));
