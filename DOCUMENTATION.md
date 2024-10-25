@@ -72,6 +72,14 @@ If you exclude the file path, the default path is `./CODEOWNERS`.
 
 Optionally, you can also provide a `-d` flag to have the migrator try to maximize how deep each captains file is placed in your repo.
 
+To test the policies in your `code-captains.yml` file(s), the tool comes with another command where you can provide file paths and see if they would match your policies.
+
+You can run this from the root of your repo:
+
+```bash
+npx @upshift-dev/code-captains-migrator test [path-to-changed-file]...>
+```
+
 ### Usage
 
 To use the captains files, we distribute a Github action which understands how to read filepaths and determine who the captains are.

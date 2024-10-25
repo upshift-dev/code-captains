@@ -2,6 +2,7 @@
 
 import { program } from "commander";
 
+import { runTestEvaluation } from "./cmds/evaluate.js";
 import { migrate } from "./cmds/migrate.js";
 
 const main = async () => {
@@ -22,6 +23,16 @@ const main = async () => {
                 console.error(res.message);
                 process.exit(1);
             }
+        });
+
+    program
+        .command("test")
+        .description("Test if file paths match code captains policies")
+        .argument("<files...>", "List of file paths (relative to the root of the repo)")
+        .option("-v, --verbose", "Log verbose results", false)
+        .action(async (files: string[], options: { verbose: boolean }) => {
+            const { verbose } = options;
+            await runTestEvaluation(files, verbose);
         });
 
     await program.parseAsync();
